@@ -7,7 +7,7 @@ class LoadSpecCommand(sublime_plugin.WindowCommand):
 
     spec_file = active_file.replace("app", "spec").replace("assets", "")
 
-    if "js" in spec_file:
+    if ".js" in spec_file:
       spec_file = spec_file.replace(".js", "_spec.js")
     else:
       (row, col) = active_view.rowcol(active_view.sel()[0].begin())
