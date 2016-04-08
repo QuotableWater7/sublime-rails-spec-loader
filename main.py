@@ -5,7 +5,7 @@ class LoadSpecCommand(sublime_plugin.WindowCommand):
     active_view = self.window.active_view()
     active_file = active_view.file_name()
 
-    spec_file = active_file.replace("app/assets", "spec")
+    spec_file = active_file.replace("app", "spec").replace("assets", "")
 
     if "js" in spec_file:
       spec_file = spec_file.replace(".js", "_spec.js")
@@ -16,16 +16,14 @@ class LoadSpecCommand(sublime_plugin.WindowCommand):
       last_method_seen = ""
       for line in open_file.readlines():
         lines_so_far += 1
-        if "def" in line:
-          last_method_seen = re.search(r"def ([^\(]*)", line).group(1).strip()
+        method_found = re.search(r"^\s*def ([^\(^\s]*)", line)
+        if method_found:
+          last_method_seen = method_found.group(1).strip()
+          last_method_seen = last_method_seen.replace("?", "_predicate")
+          last_method_seen = last_method_seen.replace("!", "_bang")
+          last_method_seen = last_method_seen.replace("=", "_writer")
         if lines_so_far == row:
           break
-
-      # if instance method:
-      #   something_controller.rb -> something_controller/method_name.rb
-      # else
-      #   model.rb -> model/class_methods/method_name.rb
       spec_file = spec_file.replace(".rb", "/" + last_method_seen + "_spec.rb")
-      spec_file = spec_file.replace("app", "spec")
 
     self.window.open_file(spec_file)
