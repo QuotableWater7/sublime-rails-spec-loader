@@ -18,12 +18,16 @@ class LoadSpecCommand(sublime_plugin.WindowCommand):
         lines_so_far += 1
         method_found = re.search(r"^\s*def ([^\(^\s]*)", line)
         if method_found:
-          last_method_seen = method_found.group(1).strip()
-          last_method_seen = last_method_seen.replace("?", "_predicate")
-          last_method_seen = last_method_seen.replace("!", "_bang")
-          last_method_seen = last_method_seen.replace("=", "_writer")
+          last_method_seen = self.spec_name_for_method(method_found)
         if lines_so_far == row:
           break
       spec_file = spec_file.replace(".rb", "/" + last_method_seen + "_spec.rb")
 
     self.window.open_file(spec_file)
+
+  def spec_name_for_method(self, method):
+    method = method.group(1).strip()
+    method = method.replace("?", "_predicate")
+    method = method.replace("!", "_bang")
+    method = method.replace("=", "_writer")
+    return method
